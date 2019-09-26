@@ -3,18 +3,19 @@ import styled from 'styled-components';
 import PropTypes from 'prop-types';
 
 const ImgDiv = styled.div`
-  vertical-align: middle;
+  /* vertical-align: middle; */
   border-radius: 50%;
   background: #333;
   &.withimg {
     box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.12);
-    background: #fff;
+    /* background: #fff; */
+    background-color: transparent;
   }
   position: relative;
   overflow: hidden;
   display: inline-block;
-  width: 44px;
-  height: 44px;
+  width: 100%;
+  height: 100%;
 
   > img {
     max-width: 100%;

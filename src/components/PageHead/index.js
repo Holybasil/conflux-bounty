@@ -7,62 +7,37 @@ import * as actions from './action';
 
 import headImg from '../../assets/iconfont/conflux-head-logo.svg';
 import homeImg from '../../assets/iconfont/conflux-home-logo.svg';
+import languageImg from '../../assets/iconfont/bounty-header-language.svg';
 import UserBack from '../../assets/iconfont/user-back.svg';
 import { i18n, compose, commonPropTypes, auth, isPath } from '../../utils';
 import PhotoImg from '../PhotoImg';
 import Select from '../Select';
 
-const Wrap = styled.div`
-  &.normal {
-    width: 100%;
-    background: #ffffff;
-    box-shadow: 0px 1px 8px rgba(0, 0, 0, 0.12);
-    display: flex;
-    padding: 20px;
-    margin-bottom: 40px;
-    height: 80px;
-    position: sticky;
-    top: 0;
-    background: #fff;
-    z-index: 100;
-  }
-
-  &.home {
-    width: 100%;
-    display: flex;
-    padding: 20px;
-    z-index: 100;
-    background: transparent;
-    box-shadow: none;
-    height: 80px;
-
-    &.sticky {
-      position: sticky;
-    }
-    .head-select {
-      .input-field input {
-        color: #fff;
-      }
-      .caret path:first-child {
-        stroke: #fff;
-        fill: #fff;
-      }
+const Bountylogo = styled.img`
+  height: 100%;
+`;
+const CreateButton = styled.button`
+  display: flex;
+  align-items: center;
+  @media screen and (max-width: 425px) {
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    .material-icons {
+      height: 32px;
+      line-height: 32px;
     }
   }
-
-  .bountylogo {
-    height: 40px;
-  }
-  .right-info {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    position: relative;
-  }
-  .right-info > button {
-    display: flex;
-    align-items: center;
+`;
+const Operator = styled.div`
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  position: relative;
+  & > *:nth-child(n + 1) {
+    margin-left: 15px;
   }
 
   .red-dot {
@@ -78,37 +53,79 @@ const Wrap = styled.div`
   .red-dot-hidden {
     display: none;
   }
-  .bounty-user-nologin {
+  .bounty-user-nologin,
+  .bounty-language {
     width: 40px;
     height: 40px;
     font-size: 40px;
     line-height: 40px;
-    margin-left: 18px;
     cursor: pointer;
+    background-color: transparent;
+    @media screen and (max-width: 425px) {
+      height: 32px;
+      width: 32px;
+      font-size: 32px;
+      line-height: 32px;
+    }
   }
-  .bounty-user-loigin {
-    margin-left: 18px;
+  .bounty-user-login {
     position: relative;
+    @media screen and (max-width: 425px) {
+      height: 32px;
+      width: 32px;
+      font-size: 32px;
+      line-height: 32px;
+    }
   }
   a:hover {
     text-decoration: none;
   }
   .head-select {
     width: 88px;
-    margin-left: 10px;
     .select .caret {
       top: 10px;
       right: 2px;
     }
+    .input-field {
+      margin-top: 0;
+      margin-bottom: 0;
+      > input {
+        cursor: pointer;
+        height: 44px;
+        margin: 0;
+        text-indent: 10px;
+      }
+    }
   }
-  .head-select .input-field {
-    margin-top: 0;
-    margin-bottom: 0;
-    > input {
-      cursor: pointer;
-      height: 44px;
-      margin: 0;
-      text-indent: 10px;
+`;
+const Wrap = styled.div`
+  width: 100%;
+  display: flex;
+  height: 80px;
+  padding: 20px;
+  z-index: 100;
+  @media screen and (max-width: 425px) {
+    height: 56px;
+    padding: 12px;
+  }
+  &.normal {
+    background: #ffffff;
+    box-shadow: 0px 1px 8px rgba(0, 0, 0, 0.12);
+    margin-bottom: 40px;
+    position: sticky;
+    top: 0;
+    background: #fff;
+  }
+
+  &.home {
+    .head-select {
+      .input-field input {
+        color: #fff;
+      }
+      .caret path:first-child {
+        stroke: #fff;
+        fill: #fff;
+      }
     }
   }
 `;
@@ -208,21 +225,21 @@ class PageHead extends Component {
     } else {
       wrapClass = 'normal';
     }
-
+    const isMobile = window.innerWidth <= '425';
     return (
       <Wrap className={wrapClass}>
         <Link to="/">
-          <img src={wrapClass === 'home' ? homeImg : headImg} className="bountylogo" alt="bountylogo" />
+          <Bountylogo src={wrapClass === 'home' ? homeImg : headImg} className="bountylogo" alt="bountylogo" />
         </Link>
 
-        <div className="right-info">
-          <button className="btn primary" type="button" onClick={this.createBounty}>
+        <Operator>
+          <CreateButton className="btn primary" type="button" onClick={this.createBounty}>
             <i className="material-icons dp48">add</i>
-            <span>{i18n('CREATE BOUNTY')}</span>
-          </button>
+            {!isMobile && <span>{i18n('CREATE BOUNTY')}</span>}
+          </CreateButton>
 
           {auth.loggedIn() ? (
-            <Link to="/user-info" className="bounty-user-loigin">
+            <Link to="/user-info" className="bounty-user-login">
               <PhotoImg imgSrc={head.user.photoUrl || UserBack} alt="userimg" />
               <i className={head.messageCount > 0 ? 'red-dot' : 'red-dot-hidden'} />
             </Link>
@@ -235,33 +252,38 @@ class PageHead extends Component {
               }}
             />
           )}
-
-          <div className="head-select">
-            <Select
-              {...{
-                label: '',
-                onSelect: v => {
-                  updateCommon({
-                    lang: v.value,
-                  });
-                },
-                options: [
-                  {
-                    label: 'English',
-                    value: 'en',
+          {isMobile ? (
+            <div className="bounty-language">
+              <PhotoImg imgSrc={languageImg} alt="languageImg" />
+            </div>
+          ) : (
+            <div className="head-select">
+              <Select
+                {...{
+                  label: '',
+                  onSelect: v => {
+                    updateCommon({
+                      lang: v.value,
+                    });
                   },
-                  {
-                    label: '中文',
-                    value: 'zh-CN',
+                  options: [
+                    {
+                      label: 'English',
+                      value: 'en',
+                    },
+                    {
+                      label: '中文',
+                      value: 'zh-CN',
+                    },
+                  ],
+                  selected: {
+                    value: lang,
                   },
-                ],
-                selected: {
-                  value: lang,
-                },
-              }}
-            />
-          </div>
-        </div>
+                }}
+              />
+            </div>
+          )}
+        </Operator>
       </Wrap>
     );
   }
